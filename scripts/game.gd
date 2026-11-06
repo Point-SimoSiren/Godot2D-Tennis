@@ -1,12 +1,22 @@
 extends Node2D
 
+const COIN_SCENE := preload("res://scenes/coin.tscn")
+const COIN_POINTS := 10
+const COIN_POSITIONS := [
+	Vector2(190, 210), Vector2(480, 215), Vector2(770, 210),
+	Vector2(315, 335), Vector2(645, 335), Vector2(480, 455),
+]
+
 @onready var paddle: Paddle = $Paddle
 @onready var ball: Ball = $Ball
 
 var hits := 0
 var misses := 0
+var points := 0
+var coins_remaining := 0
 var respawn_time := 0.0
-var score_label: Label
+var points_label: Label
+var hits_label: Label
 var misses_label: Label
 var hint_label: Label
 
@@ -18,10 +28,12 @@ func _ready() -> void:
 	add_wall("TopWall", Vector2(480, 72), Vector2(900, 18))
 
 	add_text("PALLOMAILA", Vector2(40, 14), 27, Color("eaf8ff"))
-	score_label = add_text("", Vector2(575, 18), 20, Color("ffd36e"))
-	misses_label = add_text("", Vector2(750, 18), 20, Color("9cd7e5"))
+	points_label = add_text("", Vector2(390, 18), 20, Color("ffd36e"))
+	hits_label = add_text("", Vector2(585, 18), 20, Color("ffb597"))
+	misses_label = add_text("", Vector2(745, 18), 20, Color("9cd7e5"))
 	hint_label = add_text("Liikuta mailaa: hiiri, kosketus tai ← → / A D", Vector2(48, 603), 17, Color("9bb8c8"))
 	update_score()
+	spawn_coins()
 
 	ball.paddle = paddle
 	ball.paddle_hit.connect(_on_paddle_hit)
@@ -35,7 +47,18 @@ func _process(delta: float) -> void:
 	respawn_time -= delta
 	if respawn_time <= 0.0:
 		hint_label.text = "Liikuta mailaa: hiiri, kosketus tai ← → / A D"
+		if coins_remaining == 0:
+			spawn_coins()
 		ball.launch()
+
+
+func spawn_coins() -> void:
+	for coin_position in COIN_POSITIONS:
+		var coin: Area2D = COIN_SCENE.instantiate()
+		coin.position = coin_position
+		coin.connect("collected", _on_coin_collected)
+		add_child(coin)
+		coins_remaining += 1
 
 
 func add_wall(wall_name: String, wall_position: Vector2, wall_size: Vector2) -> void:
@@ -61,8 +84,15 @@ func add_text(content: String, at: Vector2, font_size: int, color: Color) -> Lab
 
 
 func update_score() -> void:
-	score_label.text = "OSUMAT  %d" % hits
+	points_label.text = "PISTEET  %d" % points
+	hits_label.text = "OSUMAT  %d" % hits
 	misses_label.text = "OHITUKSET  %d" % misses
+
+
+func _on_coin_collected() -> void:
+	points += COIN_POINTS
+	coins_remaining -= 1
+	update_score()
 
 
 func _on_paddle_hit() -> void:

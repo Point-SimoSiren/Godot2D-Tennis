@@ -1,6 +1,6 @@
 # Pallomaila
 
-Yksinkertainen Godot 4:n 2D-peli. Ylhäältä tuleva pallo kimpoaa seinistä ja mailasta. Mailaosumasta saa pisteen, ja ohituksen jälkeen uusi pallo saapuu automaattisesti.
+Yksinkertainen Godot 4:n 2D-peli. Ylhäältä tuleva pallo kimpoaa seinistä ja mailasta. Kun pallo osuu kolikkoon, kolikko katoaa ja saat 10 pistettä. Peli laskee myös mailaosumat ja ohitukset. Ohituksen jälkeen uusi pallo saapuu automaattisesti. Kun kaikki kolikot on kerätty, seuraavan pallon mukana ilmestyy uusi erä kolikoita.
 
 ## Käynnistys
 
